@@ -5,6 +5,15 @@
 <head>
 <meta charset="UTF-8">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<style>
+	.console {
+			  width : 300px;
+			  height : 300px;
+			  border: 2px solid black;
+			  margin: 0 auto;
+			  padding : 20px;
+			 }
+</style>
 <title>SiteParser</title>
 </head>
 	<body>
@@ -14,7 +23,7 @@
 	                <h3>[입력]</h3>
 	            </div>
 	            <div>
-	                URL <input id="url" type="text" placeholder = "https://www.google.com">
+	                URL <input id="url" type="text" value="https://www.google.com">
 	            </div>
 	            <div>
 	                Type
@@ -24,7 +33,7 @@
 	                </select>
 	            </div>
 	            <div>
-	                출력단위묶음 <input id="size" type="number">
+	                출력단위묶음 <input id="size" type="number" value = 10>
 	            </div>
 	            <div>
 	                <input type="button" value="출력" onclick="parse()">

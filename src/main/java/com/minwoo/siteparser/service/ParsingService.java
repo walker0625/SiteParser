@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.minwoo.siteparser.constants.Constants;
 import com.minwoo.siteparser.dto.ParsingInput;
 import com.minwoo.siteparser.dto.ParsingOutput;
 
@@ -23,7 +24,7 @@ public class ParsingService {
 		try {
 			Document doc = Jsoup.connect(parsingInput.getUrl()).get();
 			
-			if("onlyText".equals(parsingInput.getType())) {
+			if(Constants.ONLY_TEXT.equals(parsingInput.getType())) {
 				scrapedString = doc.text();
 			} else {
 				scrapedString = doc.toString(); // html 태그를 포함한 모든 문자열
@@ -37,10 +38,9 @@ public class ParsingService {
 	}
 
 	private String parseSrapedString(String scrapedString) {
-		
 		// TODO 대소문자를 구분해서 처리해야 함
-		String alphabet = scrapedString.replaceAll("[^A-Za-z]", "");
-		String number = scrapedString.replaceAll("[^0-9]", "");
+		String alphabet = scrapedString.replaceAll(Constants.ALPHABET_REGEX, "");
+		String number = scrapedString.replaceAll(Constants.NUMBER_REGEX, "");
 	
 		return arrangeParsedString(alphabet, number);
 	}
@@ -58,14 +58,23 @@ public class ParsingService {
 	private String assembleOutputString(char[] arrangedAlphabet, char[] arrangedNumber) {
 		StringBuilder outputString = new StringBuilder();
 
-		int index = arrangedAlphabet.length > arrangedNumber.length ? arrangedAlphabet.length : arrangedNumber.length;
+		boolean isAlphabetLonger = arrangedAlphabet.length > arrangedNumber.length;
 		
-		// TODO 숫자가 더 긴 경우의 처리가 되어있지 않음
-		for (int i = 0; i < index; i++) {
-			outputString.append(arrangedAlphabet[i]);
-			
-			if(i <= arrangedNumber.length - 1) {
+		if(isAlphabetLonger) {
+			for (int i = 0; i < arrangedAlphabet.length-1; i++) {
+				outputString.append(arrangedAlphabet[i]);
+				
+				if(i <= arrangedNumber.length-1) {
+					outputString.append(arrangedNumber[i]);
+				}
+			}
+		} else {
+			for (int i = 0; i < arrangedNumber.length-1; i++) {
 				outputString.append(arrangedNumber[i]);
+				
+				if(i <= arrangedAlphabet.length-1) {
+					outputString.append(arrangedAlphabet[i]);
+				}
 			}
 		}
 		
@@ -73,7 +82,6 @@ public class ParsingService {
 	}
 
 	private ParsingOutput divideSize(String outputString, String size) {
-		
 		ParsingOutput parsingOutput = new ParsingOutput();
 		
 		int outputLength = outputString.length();
